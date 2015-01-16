@@ -1,0 +1,32 @@
+message SenderMsg
+{
+	required string senderName = 1;
+	required string senderMailName = 2;
+	required string smtpSvrName = 3;
+	required int32 smtpSvrPort = 4;
+	required string base64Name = 5;
+	required string base64Passwd = 6;
+}
+
+message MailMsg
+{
+	required string receiverName = 1;
+	required string mailSubject = 2;
+	required string mailContent = 3;
+}
+
+message CheckIdReturnMsg
+{
+	required int32 error_code = 1;
+}
+
+message SendMailReturnMsg
+{
+	required int32 error_code = 1;
+}
+
+message FuncType
+{
+	required string msg = 1;
+	required int32 type = 2;
+}

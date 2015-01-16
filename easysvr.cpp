@@ -88,39 +88,54 @@ int createSvrFile(char * name)
 	of << "		}"<<endl;
 	of << "		else if(pid == 0)"<<endl;
 	of << "		{"<<endl;
-	of << "			close(sockfd);"<<endl;
-	of << "			char buffer[1000];"<<endl;
-	of << "	  		recv(new_fd,buffer,1000,0);"<<endl;
-	of << "	  		SenderMsg sendermsg;"<<endl;
-	of << "	  		if (sendermsg.ParseFromString(string(buffer)) != 0)"<<endl;
-	of << "	  		{"<<endl;
-	of << "	  			printf(\"parse error\\n\");"<<endl;
-	of << "	  			return -2;"<<endl;
-	of << "	  		}"<<endl;
-	of << "	  		else"<<endl;
-	of << "	  		{"<<endl;
-	of << "	  			cout << sendermsg.smtpsvrport() << endl;"<<endl;
-	of << "	  			cout << sendermsg.sendername() << endl;"<<endl;
-	of << "	  			cout << sendermsg.sendermailname() << endl;"<<endl;
-	of << "	  			cout << sendermsg.smtpsvrname() << endl;"<<endl;
-	of << "	  			cout << sendermsg.base64name() << endl;"<<endl;
-	of << "	  			cout << sendermsg.base64passwd() << endl;"<<endl;
-	of << "	  		}"<<endl;
-	of << "	  		CheckIdReturnMsg checkidreturnmsg;"<<endl;
-	of << "	  "<<endl;
-	of << "	/*lo	gic code*/  "<<endl;
-	of << "	  		int iRet = func(sendermsg,checkidreturnmsg);"<<endl;
-	of << "	  		if (iRet != 0)"<<endl;
-	of << "	  		{"<<endl;
-	of << "	  			printf(\"logic error\\n\");"<<endl;
-	of << "	  			return -3;"<<endl;
-	of << "	  		}"<<endl;
-	of << "	  "<<endl;
-	of << "	  "<<endl;
-	of << "	  		string sCheckidreturnmsg;"<<endl;
-	of << "	  		checkidreturnmsg.SerializeToString(&sCheckidreturnmsg);"<<endl;
-	of << "	  		send(new_fd,sCheckidreturnmsg.c_str(),sCheckidreturnmsg.size(),0);"<<endl;
-	of << "			close(new_fd);"<<endl;
+
+	of << "		close(sockfd);" << endl;
+	of << "		char buffer[1000];" << endl;
+	of << "  		int numbytes = recv(new_fd,buffer,1000,0);" << endl;
+	of << "		if (numbytes < 0)" << endl;
+	of << "		{" << endl;
+	of << "			printf(\"recv error\\n\");" << endl;
+	of << "			return -5;" << endl;
+	of << "		}" << endl;
+	of << "		string sFuncType = string(buffer,numbytes);" << endl;
+	of << "		FuncType functype_obj;" << endl;
+	of << "		if (!functype_obj.ParseFromString(sFuncType))" << endl;
+	of << "		{" << endl;
+	of << "			printf(\"parse functype error\\n\");" << endl;
+	of << "			return -2;" << endl;
+	of << "		}" << endl;
+	of << "		string sMsg;" << endl;
+	of << "		int iType = 0;" << endl;
+	of << "		sMsg = functype_obj.msg();" << endl;
+	of << "		iType = functype_obj.type();" << endl;
+	of << "		switch(iType)" << endl;
+	of << "		{" << endl;
+	of << "			case 2:" << endl;
+	of << "			{" << endl;
+	of << "				SenderMsg sendermsg;" << endl;
+	of << "				if (!sendermsg.ParseFromString(sMsg))" << endl;
+	of << "				{" << endl;
+	of << "					printf(\"parse error\\n\");" << endl;
+	of << "					return -2;" << endl;
+	of << "				}" << endl;
+	of << "				CheckIdReturnMsg checkidreturnmsg;" << endl;
+	of << "				int iRet = func(sendermsg,checkidreturnmsg);" << endl;
+	of << "				if (iRet != 0)" << endl;
+	of << "				{" << endl;
+	of << "					printf(\"logic error\\n\");" << endl;
+	of << "					return -3;" << endl;
+	of << "				}" << endl;
+	of << "				string sCheckidreturnmsg;" << endl;
+	of << "				checkidreturnmsg.SerializeToString(&sCheckidreturnmsg);" << endl;
+	of << "				send(new_fd,sCheckidreturnmsg.c_str(),sCheckidreturnmsg.size(),0);" << endl;
+	of << "				break;" << endl;
+	of << "			}" << endl;
+	of << "			default:" << endl;
+	of << "				break;" << endl;
+	of << "		}" << endl;
+
+
+	of << " 			close(new_fd);"<<endl;
 	of << "			exit(0);"<<endl;
 	of << "		}"<<endl;
 	of << "	}"<<endl;
@@ -131,7 +146,7 @@ int createSvrFile(char * name)
 
 int createCliFile(char * name)
 {
-	clifilename = string(name) + "svr.cpp";
+	clifilename = string(name) + "cli.cpp";
 	ofstream of;
 	of.open(clifilename.c_str());
 
