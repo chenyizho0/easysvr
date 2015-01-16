@@ -1,10 +1,3 @@
-/*************************************************************************
-    > File Name: mailsvr.cpp
-    > Author: laixukai
-    > Mail: laixukai@126.com 
-    > Created Time: 2015年01月14日 星期三 22时49分48秒
- ************************************************************************/
-
 #include<iostream>
 #include<fstream>
 #include<stdio.h>
@@ -17,6 +10,7 @@
 #include<sys/wait.h>
 #include"mail.pb.h"
 #include"mailsvrimpl.h"
+#include"mailsvr.h"
 using namespace std;
 
 
@@ -79,31 +73,6 @@ int init(const char * confFile,string &sIp,int &myport,int &lisnum)
 	return 0;
 }
 
-int callFuncCheckId(const string &sMsg,const int & new_fd)
-{
-	SenderMsg sendermsg;
-	if (!sendermsg.ParseFromString(sMsg))
-	{
-		printf("parse error\n");
-		return -2;
-	}
-	CheckIdReturnMsg checkidreturnmsg;
-	int iRet = funcCheckId(sendermsg,checkidreturnmsg);
-	if (iRet != 0)
-	{
-		printf("logic error\n");
-		return -3;
-	}
-	string sCheckidreturnmsg;
-	checkidreturnmsg.SerializeToString(&sCheckidreturnmsg);
-	iRet = send(new_fd,sCheckidreturnmsg.c_str(),sCheckidreturnmsg.size(),0);
-	if (iRet < 0)
-	{
-		printf("send error\n");
-		return -4;
-	}
-	return 0;
-}
 
 int main()
 {
@@ -111,7 +80,7 @@ int main()
 	int lisnum = 0;
 	string sIp;
 	int iRet = 0;
-	iRet = init("svr.conf",sIp,myport,lisnum);
+	iRet = init("mailsvr.conf",sIp,myport,lisnum);
 	if (iRet != 0)
 	{
 		printf("init error %d\n",iRet);
@@ -187,12 +156,21 @@ int main()
 			iType = functype_obj.type();
 			switch(iType)
 			{
-				case 2:
+				case 1:
 				{
 					iRet = callFuncCheckId(sMsg,new_fd);
 					if (iRet != 0)
 					{
 						printf("callFuncCheckId error : %d\n",iRet);
+					}
+					break;
+				}
+				case 2:
+				{
+					iRet = callFuncSendMail(sMsg,new_fd);
+					if (iRet != 0)
+					{
+						printf("callFuncSendMail error : %d\n",iRet);
 					}
 					break;
 				}
@@ -205,3 +183,55 @@ int main()
 		}
 	}
 }
+int callFuncCheckId(const string &sMsg,const int & new_fd)
+{
+	SenderMsg SenderMsg_obj;
+	if (!SenderMsg_obj.ParseFromString(sMsg))
+	{
+		printf("parse error\n");
+		return -2;
+	}
+	CheckIdReturnMsg CheckIdReturnMsg_obj;
+	int iRet = funcCheckId(SenderMsg_obj,CheckIdReturnMsg_obj);
+	if (iRet != 0)
+	{
+		printf("logic error\n");
+		return -3;
+	}
+	string sReturn;
+	CheckIdReturnMsg_obj.SerializeToString(&sReturn);
+	iRet = send(new_fd,sReturn.c_str(),sReturn.size(),0);
+	if (iRet < 0)
+	{
+		printf("send error\n");
+		return -4;
+	}
+	return 0;
+}
+
+int callFuncSendMail(const string &sMsg,const int & new_fd)
+{
+	MailMsg MailMsg_obj;
+	if (!MailMsg_obj.ParseFromString(sMsg))
+	{
+		printf("parse error\n");
+		return -2;
+	}
+	SendMailReturnMsg SendMailReturnMsg_obj;
+	int iRet = funcSendMail(MailMsg_obj,SendMailReturnMsg_obj);
+	if (iRet != 0)
+	{
+		printf("logic error\n");
+		return -3;
+	}
+	string sReturn;
+	SendMailReturnMsg_obj.SerializeToString(&sReturn);
+	iRet = send(new_fd,sReturn.c_str(),sReturn.size(),0);
+	if (iRet < 0)
+	{
+		printf("send error\n");
+		return -4;
+	}
+	return 0;
+}
+

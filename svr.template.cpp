@@ -1,10 +1,3 @@
-/*************************************************************************
-    > File Name: mailsvr.cpp
-    > Author: laixukai
-    > Mail: laixukai@126.com 
-    > Created Time: 2015年01月14日 星期三 22时49分48秒
- ************************************************************************/
-
 #include<iostream>
 #include<fstream>
 #include<stdio.h>
@@ -15,8 +8,9 @@
 #include<unistd.h>
 #include<errno.h>
 #include<sys/wait.h>
-#include"mail.pb.h"
-#include"mailsvrimpl.h"
+#include"TEMPLATE.pb.h"
+#include"TEMPLATEsvrimpl.h"
+#include"TEMPLATEsvr.h"
 using namespace std;
 
 
@@ -111,7 +105,7 @@ int main()
 	int lisnum = 0;
 	string sIp;
 	int iRet = 0;
-	iRet = init("svr.conf",sIp,myport,lisnum);
+	iRet = init("TEMPLATEsvr.conf",sIp,myport,lisnum);
 	if (iRet != 0)
 	{
 		printf("init error %d\n",iRet);

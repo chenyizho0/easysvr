@@ -7,161 +7,181 @@
 #include<iostream>
 #include<fstream>
 #include<string>
+#include<vector>
+#include"easysvr.h"
 using namespace std;
-string svrfilename;
-string clifilename;
-int createSvrFile(char * name)
+
+vector<FUNCTION> functions;
+
+int createSvrFile(const char * name)
 {
-	svrfilename = string(name) + "svr.cpp";
+	string svrfilename = string(name) + "svr.cpp";
 	ofstream of;
 	of.open(svrfilename.c_str());
-	of << "#include<iostream>" << endl;
-	of << "#include<stdio.h>"<<endl;
-	of << "#include<sys/socket.h>"<<endl;
-	of << "#include<stdlib.h>"<<endl;
-	of << "#include<netinet/in.h>"<<endl;
-	of << "#include<arpa/inet.h>"<<endl;
-	of << "#include<unistd.h>"<<endl;
-	of << "#include<errno.h>"<<endl;
-	of << "#include<sys/wait.h>"<<endl;
-	of << "#include\"mail.pb.h\""<<endl;
-	of << "#include\"mailsvrimpl.h\""<<endl;
-	of << "using namespace std;"<<endl;
-	of << ""<<endl;
-	of << "int myport = 22222;"<<endl;
-	of << "int lisnum = 5;"<<endl;
-	of << ""<<endl;
-	of << ""<<endl;
-	of << "void handler(int sig)"<<endl;
-	of << "{"<<endl;
-	of << "	printf(\"sig=%d\\n\",sig);"<<endl;
-	of << "}"<<endl;
-	of << ""<<endl;
-	of << "int main()"<<endl;
-	of << "{"<<endl;
-	of << "	int sockfd,new_fd;"<<endl;
-	of << "	socklen_t socklen;"<<endl;
-	of << "	struct sockaddr_in my_addr,their_addr;"<<endl;
-	of << "	socklen = sizeof(their_addr);"<<endl;
-	of << ""<<endl;
-	of << "	signal(SIGPIPE,handler);"<<endl;
-	of << "	signal(SIGCHLD,SIG_IGN);"<<endl;
-	of << ""<<endl;
-	of << "	if ((sockfd = socket(AF_INET,SOCK_STREAM,0)) == -1)"<<endl;
-	of << "	{"<<endl;
-	of << "		perror(\"socket\");"<<endl;
-	of << "		exit(errno);"<<endl;
-	of << "	}"<<endl;
-	of << "	memset(&my_addr,0,sizeof(my_addr));"<<endl;
-	of << "	my_addr.sin_family = AF_INET;"<<endl;
-	of << "	my_addr.sin_port = htons(myport);"<<endl;
-	of << "	my_addr.sin_addr.s_addr = inet_addr(\"127.0.0.1\"); "<<endl;
-	of << "	if (bind(sockfd,(struct sockaddr *) &my_addr,sizeof(struct sockaddr)) == -1)"<<endl;
-	of << "	{"<<endl;
-	of << "		perror(\"bind\");"<<endl;
-	of << "		exit(errno);"<<endl;
-	of << "	}"<<endl;
-	of << "	if (listen(sockfd,lisnum) == -1)"<<endl;
-	of << "	{"<<endl;
-	of << "		perror(\"listen\");"<<endl;
-	of << "		exit(errno);"<<endl;
-	of << "  	}"<<endl;
-	of << "	while(true)"<<endl;
-	of << "	{"<<endl;
-	of << "		if ((new_fd = accept(sockfd,(struct sockaddr *)&their_addr,&socklen)) == -1)"<<endl;
-	of << "	  	{"<<endl;
-	of << "	  		perror(\"accept\");"<<endl;
-	of << "	  		exit(errno);"<<endl;
-	of << "	  		return -1;"<<endl;
-	of << "	  	}"<<endl;
-	of << "		int pid;"<<endl;
-	of << "		if((pid = fork()) == -1)"<<endl;
-	of << "		{"<<endl;
-	of << "			perror(\"fork\");"<<endl;
-	of << "			close(new_fd);"<<endl;
-	of << "			continue;"<<endl;
-	of << "		}"<<endl;
-	of << "		if (pid > 0)"<<endl;
-	of << "		{"<<endl;
-	of << "			close(new_fd);"<<endl;
-	of << "			continue;"<<endl;
-	of << "		}"<<endl;
-	of << "		else if(pid == 0)"<<endl;
-	of << "		{"<<endl;
-
-	of << "		close(sockfd);" << endl;
-	of << "		char buffer[1000];" << endl;
-	of << "  		int numbytes = recv(new_fd,buffer,1000,0);" << endl;
-	of << "		if (numbytes < 0)" << endl;
-	of << "		{" << endl;
-	of << "			printf(\"recv error\\n\");" << endl;
-	of << "			return -5;" << endl;
-	of << "		}" << endl;
-	of << "		string sFuncType = string(buffer,numbytes);" << endl;
-	of << "		FuncType functype_obj;" << endl;
-	of << "		if (!functype_obj.ParseFromString(sFuncType))" << endl;
-	of << "		{" << endl;
-	of << "			printf(\"parse functype error\\n\");" << endl;
-	of << "			return -2;" << endl;
-	of << "		}" << endl;
-	of << "		string sMsg;" << endl;
-	of << "		int iType = 0;" << endl;
-	of << "		sMsg = functype_obj.msg();" << endl;
-	of << "		iType = functype_obj.type();" << endl;
-	of << "		switch(iType)" << endl;
-	of << "		{" << endl;
-	of << "			case 2:" << endl;
-	of << "			{" << endl;
-	of << "				SenderMsg sendermsg;" << endl;
-	of << "				if (!sendermsg.ParseFromString(sMsg))" << endl;
-	of << "				{" << endl;
-	of << "					printf(\"parse error\\n\");" << endl;
-	of << "					return -2;" << endl;
-	of << "				}" << endl;
-	of << "				CheckIdReturnMsg checkidreturnmsg;" << endl;
-	of << "				int iRet = func(sendermsg,checkidreturnmsg);" << endl;
-	of << "				if (iRet != 0)" << endl;
-	of << "				{" << endl;
-	of << "					printf(\"logic error\\n\");" << endl;
-	of << "					return -3;" << endl;
-	of << "				}" << endl;
-	of << "				string sCheckidreturnmsg;" << endl;
-	of << "				checkidreturnmsg.SerializeToString(&sCheckidreturnmsg);" << endl;
-	of << "				send(new_fd,sCheckidreturnmsg.c_str(),sCheckidreturnmsg.size(),0);" << endl;
-	of << "				break;" << endl;
-	of << "			}" << endl;
-	of << "			default:" << endl;
-	of << "				break;" << endl;
-	of << "		}" << endl;
-
-
-	of << " 			close(new_fd);"<<endl;
-	of << "			exit(0);"<<endl;
-	of << "		}"<<endl;
-	of << "	}"<<endl;
-	of << "}"<<endl;
 	of.close();
 	return 0;
 }
 
-int createCliFile(char * name)
+int createCliFile(const char * name)
 {
-	clifilename = string(name) + "cli.cpp";
+	string clifilename = string(name) + "cli.cpp";
 	ofstream of;
 	of.open(clifilename.c_str());
+	of.close();
+	return 0;
+}
 
+int readFunctions(const char * name)
+{
+	functions.clear();
+	string funcfilename = string(name) + ".func";
+	ifstream readfile;
+	readfile.open(funcfilename.c_str());
+	if (!readfile.is_open())
+	{
+		printf("funcfile error\n");
+		return -1;
+	}
+	string function_name;
+	string function_input;
+	string function_output;
+	int function_id = 0;
+	while(!readfile.eof())
+	{
+		readfile >> function_name;
+		if (!readfile.eof())
+			readfile >> function_input;
+		else
+			break;
+		if (!readfile.eof())
+			readfile >> function_output;
+		else
+			break;
+		++function_id;
+		functions.push_back(FUNCTION(function_name,function_input,function_output,function_id));
+	}
+	readfile.close();
+	for (int i = 0;i < functions.size();i++)
+	{
+		cout << functions[i].get_name() << " " << functions[i].get_input() << " " << functions[i].get_output() << " " << functions[i].get_id() << endl;
+	}
+	return 0;
+}
+
+int createPart3(const char * name)
+{
+	string part3filename = string(name) + "svr.template.part3";
+	ofstream of;
+	of.open(part3filename.c_str());
+	for (int i = 0;i < functions.size();i++)
+	{
+		of << "				case " << functions[i].get_id() << ":" << endl;
+		of << "				{" << endl;
+		of << "					iRet = callFunc" << functions[i].get_name() << "(sMsg,new_fd);" << endl;
+		of << "					if (iRet != 0)" << endl;
+		of << "					{" << endl;
+		of << "						printf(\"callFunc" << functions[i].get_name() << " error : %d\\n\",iRet);" << endl;
+		of << "					}" << endl;
+		of << "					break;" << endl;
+		of << "				}" << endl;
+	}
+	of.close();
+	return 0;
+}
+
+int createPart4(const char * name)
+{
+	string part3filename = string(name) + "svr.template.part4";
+	ofstream of;
+	of.open(part3filename.c_str());
+	for (int i  = 0;i < functions.size();i++)
+	{
+		of << "int callFunc" << functions[i].get_name() << "(const string &sMsg,const int & new_fd)" << endl;
+		of << "{" << endl;
+		of << "	" << functions[i].get_input() << " " << functions[i].get_input() << "_obj;" << endl;
+		of << "	if (!" << functions[i].get_input() << "_obj.ParseFromString(sMsg))" << endl;
+		of << "	{" << endl;
+		of << "		printf(\"parse error\\n\");" << endl;
+		of << "		return -2;" << endl;
+		of << "	}" << endl;
+		of << "	" << functions[i].get_output() << " " << functions[i].get_output() << "_obj;" << endl;
+		of << "	int iRet = func" << functions[i].get_name() << "(" << functions[i].get_input() << "_obj" << "," << functions[i].get_output() << "_obj" << ");" << endl;
+		of << "	if (iRet != 0)" << endl;
+		of << "	{" << endl;
+		of << "		printf(\"logic error\\n\");" << endl;
+		of << "		return -3;" << endl;
+		of << "	}" << endl;
+		of << "	string sReturn;" << endl;
+		of << "	" << functions[i].get_output() << "_obj"  << ".SerializeToString(&sReturn);" << endl;
+		of << "	iRet = send(new_fd,sReturn.c_str(),sReturn.size(),0);" << endl;
+		of << "	if (iRet < 0)" << endl;
+		of << "	{" << endl;
+		of << "		printf(\"send error\\n\");" << endl;
+		of << "		return -4;" << endl;
+		of << "	}" << endl;
+		of << "	return 0;" << endl;
+		of << "}" << endl;
+		of << endl;
+	}
+
+	of.close();
+	return 0;
+}
+
+int createSvrHeadFile(const char * name)
+{
+	string svrheadfilename = string(name) + "svr.h";
+	ofstream of;
+	of.open(svrheadfilename.c_str());
+
+	of << "#include<iostream>"  << endl;
+	of << "#include<string>" << endl;
+	of << "#include\"" << string(name) << ".pb.h\"" << endl;
+	of << "using namespace std;" << endl;
+	of << endl;
+	for (int i = 0;i < functions.size();i++)
+	{
+		of << "int callFunc" <<  functions[i].get_name() <<"(const string &sMsg,const int & new_fd);" << endl;
+		of << endl;
+	}
+	of.close();
+	return 0;
 }
 int main(int argc,char ** argv)
 {
 	if (argc != 2)
 	{
-		printf("Usage : %s svrname",argv[0]);
+		printf("Usage : %s svrname\n",argv[0]);
 		return 0;
 	}
-	int iRet = createSvrFile(argv[1]);
+	int iRet = readFunctions(argv[1]);
+	if (iRet != 0)
+	{
+		printf("read functions error : %d\n",iRet);
+		return -1;
+	}
+	iRet = createPart3(argv[1]);
+	if (iRet != 0)
+	{
+		printf("create part3 error : %d\n",iRet);
+		return -2;
+	}
+	iRet = createPart4(argv[1]);
+	if (iRet != 0)
+	{
+		printf("create part4 error : %d\n",iRet);
+		return -2;
+	}
+	iRet = createSvrHeadFile(argv[1]);
+	if (iRet != 0)
+	{
+		printf("create svr head file error : %d\n",iRet);
+	}
+	/*int iRet = createSvrFile(argv[1]);
 	if (iRet != 0)
 	{
 		printf("create svr file error\n");
 		return -1;
 	}
+	*/
 }

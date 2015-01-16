@@ -1,0 +1,2 @@
+CheckId SenderMsg CheckIdReturnMsg
+SendMail MailMsg SendMailReturnMsg

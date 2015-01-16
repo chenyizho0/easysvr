@@ -1,0 +1,18 @@
+				case 1:
+				{
+					iRet = callFuncCheckId(sMsg,new_fd);
+					if (iRet != 0)
+					{
+						printf("callFuncCheckId error : %d\n",iRet);
+					}
+					break;
+				}
+				case 2:
+				{
+					iRet = callFuncSendMail(sMsg,new_fd);
+					if (iRet != 0)
+					{
+						printf("callFuncSendMail error : %d\n",iRet);
+					}
+					break;
+				}

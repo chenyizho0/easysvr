@@ -11,7 +11,7 @@
 using namespace std;
 
 
-int func(SenderMsg & sendmsg,CheckIdReturnMsg & checkidreturnmsg)
+int funcCheckId(const SenderMsg & sendmsg,CheckIdReturnMsg & checkidreturnmsg)
 {
 	int i = sendmsg.smtpsvrport();
 	CheckIdReturnMsg c;

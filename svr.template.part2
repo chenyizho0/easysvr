@@ -1,0 +1,9 @@
+				default:
+					break;
+			}
+
+			close(new_fd);
+			exit(0);
+		}
+	}
+}

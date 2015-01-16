@@ -1,0 +1,52 @@
+int callFuncCheckId(const string &sMsg,const int & new_fd)
+{
+	SenderMsg SenderMsg_obj;
+	if (!SenderMsg_obj.ParseFromString(sMsg))
+	{
+		printf("parse error\n");
+		return -2;
+	}
+	CheckIdReturnMsg CheckIdReturnMsg_obj;
+	int iRet = funcCheckId(SenderMsg_obj,CheckIdReturnMsg_obj);
+	if (iRet != 0)
+	{
+		printf("logic error\n");
+		return -3;
+	}
+	string sReturn;
+	CheckIdReturnMsg_obj.SerializeToString(&sReturn);
+	iRet = send(new_fd,sReturn.c_str(),sReturn.size(),0);
+	if (iRet < 0)
+	{
+		printf("send error\n");
+		return -4;
+	}
+	return 0;
+}
+
+int callFuncSendMail(const string &sMsg,const int & new_fd)
+{
+	MailMsg MailMsg_obj;
+	if (!MailMsg_obj.ParseFromString(sMsg))
+	{
+		printf("parse error\n");
+		return -2;
+	}
+	SendMailReturnMsg SendMailReturnMsg_obj;
+	int iRet = funcSendMail(MailMsg_obj,SendMailReturnMsg_obj);
+	if (iRet != 0)
+	{
+		printf("logic error\n");
+		return -3;
+	}
+	string sReturn;
+	SendMailReturnMsg_obj.SerializeToString(&sReturn);
+	iRet = send(new_fd,sReturn.c_str(),sReturn.size(),0);
+	if (iRet < 0)
+	{
+		printf("send error\n");
+		return -4;
+	}
+	return 0;
+}
+
