@@ -9,3 +9,4 @@
 protoc --cpp_out=.  $1.proto
 /home/laixukai/easysvr/easysvr $1
 cat /home/laixukai/easysvr/svr.template.part1 $1svr.template.part3  /home/laixukai/easysvr/svr.template.part2 $1svr.template.part4 | eval sed 's/TEMPLATE/$1/g' > $1svr.cpp
+cat /home/laixukai/easysvr/cli.template.part1 $1cli.template.part2 | eval sed 's/TEMPLATE/$1/g' > $1cli.cpp
