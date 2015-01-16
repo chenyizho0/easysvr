@@ -147,6 +147,48 @@ int createSvrHeadFile(const char * name)
 	of.close();
 	return 0;
 }
+
+int createSvrImplHeadFile(const char * name)
+{
+	string svrimplheadfilename = string(name) + "svrimpl.h";
+	ofstream of;
+	of.open(svrimplheadfilename.c_str());
+	of << "#include<iostream>" << endl;
+	of << "#include\"" << string(name) << ".pb.h\"" << endl;
+	of << "using namespace std;" << endl;
+	of << endl;
+	for (int i = 0;i < functions.size();i++)
+	{
+		of << "int func" << functions[i].get_name() << "( const " << functions[i].get_input() << " & " << functions[i].get_input() << "_obj," << functions[i].get_output() << " & "<< functions[i].get_output() << "_obj);" << endl;
+		of << endl;
+	}
+	of.close();
+	return 0;
+}
+
+int createSvrImplFile(const char * name)
+{
+	string svrimplfilename = string(name) + "svrimpl.cpp";
+	ofstream of;
+	of.open(svrimplfilename.c_str());
+	of << "#include<iostream>" << endl;
+	of << "#include\"" << string(name) << ".pb.h\"" << endl;
+	of << "#include\"" << string(name) << "svrimpl.h\""  << endl;
+	of << "using namespace std;" << endl;
+	of << endl;
+	for (int i = 0;i < functions.size();i++)
+	{
+		of << "int func" << functions[i].get_name() << "( const " << functions[i].get_input() << " & " << functions[i].get_input() << "_obj," << functions[i].get_output() << " & "<< functions[i].get_output() << "_obj)" << endl;
+		of << "{" << endl;
+		of << "	/*add the impl code here*/" << endl;
+		of << "	return 0;" << endl; 
+		of << "}" << endl;
+		of << endl;
+	}
+	of.close();
+	return 0;
+}
+
 int main(int argc,char ** argv)
 {
 	if (argc != 2)
@@ -176,12 +218,19 @@ int main(int argc,char ** argv)
 	if (iRet != 0)
 	{
 		printf("create svr head file error : %d\n",iRet);
+		return -2;
 	}
-	/*int iRet = createSvrFile(argv[1]);
+	iRet = createSvrImplHeadFile(argv[1]);
 	if (iRet != 0)
 	{
-		printf("create svr file error\n");
-		return -1;
+		printf("create svr impl head file error : %d\n",iRet);
+		return -2;
 	}
-	*/
+	iRet = createSvrImplFile(argv[1]);
+	if (iRet != 0)
+	{
+		printf("create svr impl file error : %d\n",iRet);
+	}
+
+	return 0;
 }

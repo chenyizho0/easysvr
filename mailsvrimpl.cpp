@@ -1,21 +1,17 @@
-/*************************************************************************
-    > File Name: mailsvrimpl.cpp
-    > Author: laixukai
-    > Mail: laixukai@126.com 
-    > Created Time: 2015年01月15日 星期四 00时37分02秒
- ************************************************************************/
-
 #include<iostream>
 #include"mail.pb.h"
 #include"mailsvrimpl.h"
 using namespace std;
 
-
-int funcCheckId(const SenderMsg & sendmsg,CheckIdReturnMsg & checkidreturnmsg)
+int funcSendMail( const MailMsg & MailMsg_obj,SendMailReturnMsg & SendMailReturnMsg_obj)
 {
-	int i = sendmsg.smtpsvrport();
-	CheckIdReturnMsg c;
-	c.set_error_code(i-10);
-	checkidreturnmsg = c;
+	/*add the impl code here*/
 	return 0;
 }
+
+int funcCheckId( const SenderMsg & SenderMsg_obj,CheckIdReturnMsg & CheckIdReturnMsg_obj)
+{
+	CheckIdReturnMsg_obj.set_error_code(-100);
+	return 0;
+}
+
