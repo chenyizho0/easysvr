@@ -125,8 +125,6 @@ int createSvrFile(char * name)
 	of << "		}"<<endl;
 	of << "	}"<<endl;
 	of << "}"<<endl;
-	of << "	return 0;"<<endl;
-	of << "}"<<endl;
 	of.close();
 	return 0;
 }
