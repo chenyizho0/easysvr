@@ -1,0 +1,9 @@
+all: TEMPLATEsvr TEMPLATEclient
+clean: 
+	rm -f TEMPLATEsvr TEMPLATEclient TEMPLATE.pb.h TEMPLATE.pb.cc
+protobuf: TEMPLATE.proto
+	protoc --cpp_out=. TEMPLATE.proto 
+TEMPLATEclient: TEMPLATEcli.cpp TEMPLATEcli.h testTEMPLATEcli.cpp  protobuf
+	g++ -g -o testTEMPLATEclient TEMPLATEcli.cpp testTEMPLATEcli.cpp TEMPLATE.pb.cc -I/usr/local/include/google/protobuf -L/usr/local/lib -lprotobuf 
+TEMPLATEsvr: TEMPLATEsvr.cpp TEMPLATEsvrimpl.cpp TEMPLATEsvrimpl.h protobuf
+	g++ -g -o TEMPLATEsvr TEMPLATEsvr.cpp TEMPLATEsvrimpl.cpp TEMPLATE.pb.cc -I/usr/local/include/google/protobuf -L/usr/local/lib -lprotobuf 

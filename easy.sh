@@ -14,3 +14,4 @@ then
 fi
 cat /home/laixukai/easysvr/svr.template.part1 /home/laixukai/easysvr/svr.process.template.part1 $1svr.process.template.part2 $1svr.function.template | eval sed 's/TEMPLATE/$1/g' > $1svr.cpp 
 cat /home/laixukai/easysvr/cli.template.part1 $1cli.template.part2 | eval sed 's/TEMPLATE/$1/g' > $1cli.cpp
+cat /home/laixukai/easysvr/Makefile.template | eval sed 's/TEMPLATE/$1/g' > Makefile
