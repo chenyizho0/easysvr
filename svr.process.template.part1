@@ -1,0 +1,29 @@
+
+int process(int new_fd)
+{
+	int iErrorCode = 0;
+	while(1)
+	{
+		int iRet = 0;
+		char buffer[1000];
+		int numbytes = recv(new_fd,buffer,1000,0);
+		if (numbytes < 0)
+		{
+			printf("recv error\n");
+			iErrorCode = -1;
+			break;
+		}
+		string sFuncType = string(buffer,numbytes);
+		FuncType functype_obj;
+		if (!functype_obj.ParseFromString(sFuncType))
+		{
+			printf("parse functype error\n");
+			iErrorCode = -2;
+			break;
+		}
+		string sMsg;
+		int iType = 0;
+		sMsg = functype_obj.msg();
+		iType = functype_obj.type();
+		switch(iType)
+		{

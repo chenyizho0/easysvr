@@ -45,34 +45,39 @@ int readFunctions(const char * name)
 	return 0;
 }
 
-int createPart3(const char * name)
+int createProcessPart2(const char * name)
 {
-	string part3filename = string(name) + "svr.template.part3";
+	string part3filename = string(name) + "svr.process.template.part2";
 	ofstream of;
 	of.open(part3filename.c_str());
 	for (int i = 0;i < functions.size();i++)
 	{
-		of << "				case " << functions[i].get_id() << ":" << endl;
+		of << "			case " << functions[i].get_id() << ":" << endl;
+		of << "			{" << endl;
+		of << "				iRet = callFunc" << functions[i].get_name() << "(sMsg,new_fd);" << endl;
+		of << "				if (iRet != 0)" << endl;
 		of << "				{" << endl;
-		of << "					iRet = callFunc" << functions[i].get_name() << "(sMsg,new_fd);" << endl;
-		of << "					if (iRet != 0)" << endl;
-		of << "					{" << endl;
-		of << "						printf(\"callFunc" << functions[i].get_name() << " error : %d\\n\",iRet);" << endl;
-		of << "					}" << endl;
-		of << "					break;" << endl;
+		of << "					printf(\"callFunc" << functions[i].get_name() << " error : %d\\n\",iRet);" << endl;
 		of << "				}" << endl;
-		of << "	}" << endl;
+		of << "				break;" << endl;
+		of << "			}" << endl;
 	}
+	
+	of << "			default:"  << endl;
+	of << "				break;"  << endl;
+	of << "		}"  << endl;
+	of << "	}" << endl;
 	of << "	close(new_fd);" << endl;
-	of << " return iErrorCode;" << endl;
-	of << "}" << endl;
+	of << "	return iErrorCode;"  << endl;
+	of << "}"  << endl;
+	of << endl;
 	of.close();
 	return 0;
 }
 
-int createPart4(const char * name)
+int createSvrFunction(const char * name)
 {
-	string part3filename = string(name) + "svr.template.part4";
+	string part3filename = string(name) + "svr.function.template";
 	ofstream of;
 	of.open(part3filename.c_str());
 	for (int i  = 0;i < functions.size();i++)
@@ -125,6 +130,8 @@ int createSvrHeadFile(const char * name)
 		of << "int callFunc" <<  functions[i].get_name() <<"(const string &sMsg,const int & new_fd);" << endl;
 		of << endl;
 	}
+	of << "int process(int sockfd);" << endl; 
+	of << endl;
 	of.close();
 	return 0;
 }
@@ -321,13 +328,13 @@ int main(int argc,char ** argv)
 		printf("read functions error : %d\n",iRet);
 		return -1;
 	}
-	iRet = createPart3(argv[1]);
+	iRet = createProcessPart2(argv[1]);
 	if (iRet != 0)
 	{
 		printf("create part3 error : %d\n",iRet);
 		return -2;
 	}
-	iRet = createPart4(argv[1]);
+	iRet = createSvrFunction(argv[1]);
 	if (iRet != 0)
 	{
 		printf("create part4 error : %d\n",iRet);
