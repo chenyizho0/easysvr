@@ -61,7 +61,11 @@ int createPart3(const char * name)
 		of << "					}" << endl;
 		of << "					break;" << endl;
 		of << "				}" << endl;
+		of << "	}" << endl;
 	}
+	of << "	close(new_fd);" << endl;
+	of << " return iErrorCode;" << endl;
+	of << "}" << endl;
 	of.close();
 	return 0;
 }

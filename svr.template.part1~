@@ -121,8 +121,6 @@ int main()
 	  		exit(errno);
 	  		return -1;
 	  	}
-		char buf[128];
-
 		int pid;
 		if((pid = fork()) == -1)
 		{
@@ -138,9 +136,23 @@ int main()
 		else if(pid == 0)
 		{
 			close(sockfd);
-			iRet = process(new_fd);
-			printf("process return : %d\n",iRet);
-			return iRet;
-		}
-	}
-}
+			char buffer[1000];
+	  		int numbytes = recv(new_fd,buffer,1000,0);
+			if (numbytes < 0)
+			{
+				printf("recv error\n");
+				return -5;
+			}
+			string sFuncType = string(buffer,numbytes);
+			FuncType functype_obj;
+			if (!functype_obj.ParseFromString(sFuncType))
+			{
+				printf("parse functype error\n");
+				return -2;
+			}
+			string sMsg;
+			int iType = 0;
+			sMsg = functype_obj.msg();
+			iType = functype_obj.type();
+			switch(iType)
+			{
